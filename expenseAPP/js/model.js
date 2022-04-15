@@ -6,8 +6,10 @@ export default class Model{
             this.toPays=[
                 {
                     id:0,
-                    title:'Tittle Test',
-                    description:'Desc Test',
+                    title:'Test Tittle',
+                    description:'Test Description',
+                    value: Math.floor(Math.random()*(10000-1+1)+1),
+                    date: new Date().toISOString().slice(0, 10),
                     paid:false,
                 }
             ]
@@ -48,11 +50,13 @@ export default class Model{
 
     }
 
-    addToPay(title,description){
+    addToPay(title,description,value,date){
         const toPay = {
             id: this.currentId++,
             title,
             description,
+            value,
+            date,
             paid: false,
         }
 

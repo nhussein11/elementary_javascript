@@ -10,7 +10,7 @@ export default class View{
         this.modal = new Modal();
         this.filters=new Filters();
 
-        this.addToPayForm.onClick((title,description) => this.addToPay(title, description));
+        this.addToPayForm.onClick((title,description,value,date) => this.addToPay(title, description,value,date));
         this.modal.onClick((id,values)=>this.editToPay(id,values));
         this.filters.onClick((filters)=>this.filter(filters));
     }
@@ -29,10 +29,10 @@ export default class View{
         const [, ... rows] = this.table.getElementsByTagName('tr');
         
         for (const row of rows){
-            const [title,description,paid]=row.children;
+            const [title,description,value,date,paid]=row.children;
             let shouldHide = false;
             if (words){
-                shouldHide = !title.innerText.includes(words) && !description.innerText.includes(words)
+                shouldHide = !title.innerText.includes(words) && !description.innerText.includes(words) && !value.innerText.includes(words) && !date.innerText.includes(words)
             }
 
             const shouldBePayOff = type === 'pay_for';
@@ -49,8 +49,8 @@ export default class View{
         }
     }
 
-    addToPay(title,description){
-        const toPay= this.model.addToPay(title,description);
+    addToPay(title,description,value,date){
+        const toPay= this.model.addToPay(title,description,value,date);
         this.createRow(toPay);
     }
 
@@ -63,7 +63,9 @@ export default class View{
         const row =document.getElementById(id);
         row.children[0].innerText = values.title;
         row.children[1].innerText = values.description;
-        row.children[2].children[0].checked  = values.paid;
+        row.children[2].innerText = values.value;
+        row.children[3].innerText = values.date;
+        row.children[4].children[0].checked  = values.paid;
 
     }
 
@@ -78,6 +80,8 @@ export default class View{
         row.innerHTML = `
             <td>${toPay.title}</td>
             <td>${toPay.description}</td>
+            <td>${toPay.value}</td>
+            <td>${toPay.date}</td>
             <td class="text-center">
             </td>
             <td class="text-right">
@@ -87,7 +91,7 @@ export default class View{
         checkbox.type='checkbox';
         checkbox.checked=toPay.paid;
         checkbox.onclick = ()=>this.togglePaid(toPay.id);
-        row.children[2].appendChild(checkbox);
+        row.children[4].appendChild(checkbox);
 
         const  editBtn  = document.createElement('button');
         editBtn.classList.add('btn','btn-primary','mb-1');
@@ -98,14 +102,16 @@ export default class View{
             id:toPay.id,
             title: row.children[0].innerText,
             description: row.children[1].innerText,
-            paid: row.children[2].children[0].checked,
+            value: row.children[2].innerText,
+            date: row.children[3].innerHTML,
+            paid: row.children[4].children[0].checked,
         });
-        row.children[3].appendChild(editBtn);
+        row.children[5].appendChild(editBtn);
 
         const removeBtn = document.createElement('button');
         removeBtn.classList.add('btn','btn-danger','mb-1','ml-1');
         removeBtn.innerHTML='<i class="fa fa-trash"></i>';
         removeBtn.onclick = () => this.removeToPay(toPay.id);
-        row.children[3].appendChild(removeBtn);
+        row.children[5].appendChild(removeBtn);
     }
 }
